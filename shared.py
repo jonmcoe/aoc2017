@@ -42,6 +42,20 @@ def count_with_all_unique_elements(lines):
     return sum((1 if len(list(l)) == len(set(list(l))) else 0) for l in lines)
 
 
+# 5
+
+
+def run_instructions(instructions, alteration_function):
+    steps = 0
+    num_instructions = len(instructions)
+    cur_index = 0
+    while 0 <= cur_index < num_instructions:
+        cur_val = instructions[cur_index]
+        instructions[cur_index] = alteration_function(cur_val)
+        cur_index += cur_val
+        steps += 1
+    return steps
+
 #16
 
 class DancerLineup(object):
