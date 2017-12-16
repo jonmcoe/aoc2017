@@ -31,7 +31,7 @@ def get_separated_rows(filename, sep=',', func=None):
     if not func:
         func = identity
     with open(filename, 'r') as f:
-        return ((func(item) for item in (l.split(sep))) for l in f.readlines())
+        return ([func(item) for item in (l.split(sep))] for l in f.readlines())
 
 
 #16
