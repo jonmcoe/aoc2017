@@ -1,7 +1,6 @@
-import string
 import sys
 
-from shared import get_moves, CHARACTER_TO_FUNCTION
+from shared import DancerLineup, get_moves
 
 
 DEFAULT_NUMBER_OF_DANCERS = 16
@@ -11,12 +10,10 @@ if __name__ == '__main__':
     move_set = get_moves(sys.argv[1])
     number_of_dancers = (len(sys.argv) > 2 and int(sys.argv[2])) or DEFAULT_NUMBER_OF_DANCERS
     debug = len(sys.argv) > 3 and bool(sys.argv[3])
-    current_dancers = list(string.ascii_lowercase[:number_of_dancers])
+    current_dancers = DancerLineup(number_of_dancers)
     for move in move_set:
-        move_func = CHARACTER_TO_FUNCTION[move[0]]
-        move_args = move[1:].split('/')
         if debug:
-            print(''.join(current_dancers))
+            print(current_dancers)
             print("MOVE: {0}".format(move))
-        current_dancers = move_func(current_dancers, *move_args)
-    print(''.join(current_dancers))
+        current_dancers.process_move(move)
+    print(current_dancers)

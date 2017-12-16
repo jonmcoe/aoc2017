@@ -1,3 +1,6 @@
+import string
+
+
 # 1
 
 
@@ -22,33 +25,53 @@ def get_circle_sum(sumstring, counterpart_func, debug=False):
 
 #2
 
+class DancerLineup(object):
 
-def spin(dancers, step):
-    step = int(step)
-    return [dancers[i - step] for i, _ in enumerate(dancers)]
+    def __init__(self, n):
+        self._offset = 0
+        self._number_of_dancers = n
+        self._dancers = list(string.ascii_lowercase[:n])
+        # self._name_to_index = {
+        #     k: v for v, k in enumerate(self._dancers)
+        # }
+
+    def __str__(self):
+        return ''.join(self._dancers[i - self._offset] for i in range(self._number_of_dancers))
+
+    def spin(self, step):
+        self._offset += step
+        self._offset %= self._number_of_dancers
+
+    def exchange(self, first_index, second_index):
+        internal_first_index = first_index - self._offset
+        internal_second_index = second_index - self._offset
+        self._dumb_swap(internal_first_index , internal_second_index)
+        # self._name_to_index[self._dancers[internal_first_index]]
+
+    def partner(self, first_name, second_name):
+        internal_first_index = self._dancers.index(first_name)
+        internal_second_index = self._dancers.index(second_name)
+        self._dumb_swap(internal_first_index, internal_second_index)
+
+    def _dumb_swap(self, first_index, second_index):
+        self._dancers[first_index], self._dancers[second_index] = self._dancers[second_index], self._dancers[first_index]
+
+    def process_move(self, movestring):
+        move_func = {
+            's': self.spin,
+            'x': self.exchange,
+            'p': self.partner
+        }[movestring[0]]
+        args = movestring[1:].split('/')
+        args = [(int(a) if a.isdigit() else a) for a in args]
+        move_func(*args)
 
 
-def _swap(dancers, first_index, second_index):
-    x = list(dancers)
-    x[first_index] = dancers[second_index]
-    x[second_index] = dancers[first_index]
-    return x
-
-
-def exchange(dancers, first_index, second_index):
-    first_index = int(first_index); second_index = int(second_index)
-    return _swap(dancers, first_index, second_index)
-
-
-def partner(dancers, first_name, second_name):
-    return _swap(dancers, dancers.index(first_name), dancers.index(second_name))
-
-
-CHARACTER_TO_FUNCTION = {
-    's': spin,
-    'x': exchange,
-    'p': partner
-}
+# CHARACTER_TO_FUNCTION = {
+#     's': spin,
+#     'x': exchange,
+#     'p': partner
+# }
 
 
 def get_moves(filename):
