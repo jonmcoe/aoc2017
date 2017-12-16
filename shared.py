@@ -25,9 +25,13 @@ def get_circle_sum(sumstring, counterpart_func, debug=False):
 
 #2
 
-def get_separated_rows(filename, sep=','):
+def get_separated_rows(filename, sep=',', func=None):
+    def identity(x):
+        return x
+    if not func:
+        func = identity
     with open(filename, 'r') as f:
-        return (l.split(sep) for l in f.readlines())
+        return ((func(item) for item in (l.split(sep))) for l in f.readlines())
 
 
 #16
