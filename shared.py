@@ -31,7 +31,7 @@ class DancerLineup(object):
         self._offset = 0
         self._number_of_dancers = n
         self._dancers = list(string.ascii_lowercase[:n])
-        # self._name_to_index = {
+        # self._name_to_index = {  # need this if n gets big
         #     k: v for v, k in enumerate(self._dancers)
         # }
 
@@ -46,10 +46,9 @@ class DancerLineup(object):
         internal_first_index = first_index - self._offset
         internal_second_index = second_index - self._offset
         self._dumb_swap(internal_first_index , internal_second_index)
-        # self._name_to_index[self._dancers[internal_first_index]]
 
     def partner(self, first_name, second_name):
-        internal_first_index = self._dancers.index(first_name)
+        internal_first_index = self._dancers.index(first_name)   # problem if n gets big
         internal_second_index = self._dancers.index(second_name)
         self._dumb_swap(internal_first_index, internal_second_index)
 
@@ -65,13 +64,6 @@ class DancerLineup(object):
         args = movestring[1:].split('/')
         args = [(int(a) if a.isdigit() else a) for a in args]
         move_func(*args)
-
-
-# CHARACTER_TO_FUNCTION = {
-#     's': spin,
-#     'x': exchange,
-#     'p': partner
-# }
 
 
 def get_moves(filename):
