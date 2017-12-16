@@ -34,6 +34,14 @@ def get_separated_rows(filename, sep=',', func=None):
         return ([func(item) for item in (l.split(sep))] for l in f.readlines())
 
 
+# 3
+
+# 4
+
+def count_with_all_unique_elements(lines):
+    return sum((1 if len(list(l)) == len(set(list(l))) else 0) for l in lines)
+
+
 #16
 
 class DancerLineup(object):
