@@ -36,6 +36,45 @@ def get_separated_rows(filename, sep=',', func=None):
 
 # 3
 
+def generate_spiral_until(n, next_value_func):
+    # generate overly big list so we don't have to deal with "infinite" issues
+    size = 10000
+    grid = []
+    for i in range(size):
+        grid.append([None] * size)
+
+    # initial stuff
+    COUNTER_CLOCKWISE_DIRECTIONS_LIST = [
+        (1, 0),
+        (0, -1),
+        (-1, 0),
+        (0, 1)
+    ]
+    direction_index = 0
+    cur = size // 2, size // 2
+    last_placed = 1
+    grid[cur[0]][cur[1]] = last_placed
+    direction = COUNTER_CLOCKWISE_DIRECTIONS_LIST[direction_index]
+
+    while last_placed < n:
+        cur = (cur[0] + direction[0], cur[1] + direction[1])
+        last_placed = next_value_func(grid, cur, last_placed)
+        grid[cur[0]][cur[1]] = last_placed
+        all_neighbors = [
+            grid[cur[0] - 1][cur[1]],
+            grid[cur[0] + 1][cur[1]],
+            grid[cur[0]][cur[1] - 1],
+            grid[cur[0]][cur[1] + 1]
+        ]
+        if len([neighbor for neighbor in all_neighbors if neighbor is not None]) == 1:
+            direction_index += 1
+            direction_index %= len(COUNTER_CLOCKWISE_DIRECTIONS_LIST)
+            direction = COUNTER_CLOCKWISE_DIRECTIONS_LIST[direction_index]
+
+    grid = [line for line in grid if any(cell is not None for cell in line)]  # filter out some of the crap. why not
+    return grid, (cur[0] - size // 2, cur[1] - size // 2), last_placed
+
+
 # 4
 
 def count_with_all_unique_elements(lines):
