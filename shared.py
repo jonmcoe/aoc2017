@@ -95,7 +95,24 @@ def run_instructions(instructions, alteration_function):
         steps += 1
     return steps
 
+
+# 6
+
+def reallocate_banks(banks):
+    redistribution_amount = max(banks)
+    new_banks = list(banks)
+    current_index = new_banks.index(redistribution_amount)
+    new_banks[current_index] = 0
+    while redistribution_amount > 0:
+        current_index += 1
+        current_index %= len(new_banks)
+        new_banks[current_index] += 1
+        redistribution_amount -= 1
+    return tuple(new_banks)
+
+
 #16
+
 
 class DancerLineup(object):
 
