@@ -222,7 +222,48 @@ class RegisterMachine:
     def get_max_register(self):
         return max(self.registers.values())
 
-#16
+# 9
+
+
+def remove_garbage(raw_string):
+    # handle !
+    no_exclamations_string = ""
+    last_exclamation = False
+    for i in raw_string:
+        if not last_exclamation and i != '!':
+            no_exclamations_string += i
+        last_exclamation = i == '!' and not last_exclamation
+
+    # remove < > blocks
+    discarded_interior = 0
+    garbageless_string = ""
+    active_left_anglebracket = False
+    for i in no_exclamations_string:
+        if active_left_anglebracket and i != '>':
+            discarded_interior += 1
+        if i == '<':
+            active_left_anglebracket = True
+
+        if not active_left_anglebracket:
+            garbageless_string += i
+        else:
+            active_left_anglebracket = i != '>'
+    return garbageless_string, discarded_interior
+
+
+def count_depth_score(input_string):
+    current_depth = 0
+    sum_depth = 0
+    for i in input_string:
+        if i == '{':
+            current_depth += 1
+            sum_depth += current_depth
+        if i == '}':
+            current_depth -= 1
+    return sum_depth
+
+
+# 16
 
 
 class DancerLineup(object):
