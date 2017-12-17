@@ -110,6 +110,30 @@ def reallocate_banks(banks):
         redistribution_amount -= 1
     return tuple(new_banks)
 
+# 7
+
+
+def get_exact_rows(filename):
+    with open(filename, 'r') as f:
+        return (l.strip() for l in f.readlines())
+
+class DiscNode(object):
+
+    def __init__(self, name, weight, children):
+        self.name = name
+        self.weight = weight
+        self.children = children
+
+
+def parse_disctree_row(line):
+    try:
+        name = line.split(' ')[0]
+        weight = line.split('(')[1].split(')')[0]
+        children_names = line.split('->')[1].strip().split(', ') if '->' in line else []
+    except:
+        raise
+    return name, weight, children_names
+
 
 #16
 
