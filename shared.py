@@ -180,6 +180,48 @@ def parse_disctree_row(line):
     return name, weight, children_names
 
 
+# 8
+
+from collections import defaultdict, namedtuple
+
+Instruction = namedtuple('instruction', ['register', 'op', 'amount', 'condition_reg', 'condition_op', 'condition_val'])
+
+
+def parse_instruction(raw_message):
+    tokens = [t for t in raw_message.split() if t != 'if']
+    for i, t in enumerate(tokens):
+        if all(c in '-0123456789' for c in t):
+            tokens[i] = int(t)
+    return Instruction(*tokens)
+
+
+class RegisterMachine:
+
+    def __init__(self):
+        self.registers = defaultdict(int)
+        self.max_ever = 0
+
+    def process_instruction(self, instruction):
+        CONDITION_DICT = {  # probably could've gotten away with eval...
+            '>': lambda reg, val: reg > val,
+            '<': lambda reg, val: reg < val,
+            '>=': lambda reg, val: reg >= val,
+            '<=': lambda reg, val: reg <= val,
+            '==': lambda reg, val: reg == val,
+            '!=': lambda reg, val: reg != val
+        }
+        OPERATION_DICT = {
+            'inc': lambda reg, val: reg + val,
+            'dec': lambda reg, val: reg - val
+        }
+        if CONDITION_DICT[instruction.condition_op](self.registers[instruction.condition_reg], instruction.condition_val):
+            new_val = OPERATION_DICT[instruction.op](self.registers[instruction.register], instruction.amount)
+            self.registers[instruction.register] = new_val
+            self.max_ever = max(new_val, self.max_ever)
+
+    def get_max_register(self):
+        return max(self.registers.values())
+
 #16
 
 
