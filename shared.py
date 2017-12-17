@@ -117,18 +117,63 @@ def get_exact_rows(filename):
     with open(filename, 'r') as f:
         return (l.strip() for l in f.readlines())
 
+
 class DiscNode(object):
 
-    def __init__(self, name, weight, children):
+    def __init__(self, name, arguments_dict):
         self.name = name
-        self.weight = weight
-        self.children = children
+        current_node_arguments = arguments_dict[name]
+        self.weight = current_node_arguments[1]
+        self.children = [
+            DiscNode(name, arguments_dict) for name in current_node_arguments[2]
+        ]
+
+    def combined_weight(self):
+        return self.weight + sum([c.combined_weight() for c in self.children])
+
+    def find_different_child(self):
+        if len(self.children) < 3:
+            return (None, None)
+
+        # inspect first 2 carefully
+        first_weight = self.children[0].combined_weight()
+        second_weight = self.children[1].combined_weight()
+        if first_weight == second_weight:
+            expected_weight = first_weight
+        else:
+            third_weight = self.children[2].combined_weight()
+            if first_weight == third_weight:
+                return self.children[1], third_weight
+            else:
+                return self.children[0], third_weight
+
+        # iterate further if first 3 match
+        for i, c in enumerate(self.children):
+            if c.combined_weight() != expected_weight:
+                return c, expected_weight
+        return None, None
+
+
+def build_disctree_arguments_dict(parsed_args_list):
+    return {
+        args[0]: args for args in parsed_args_list
+    }
+
+
+def find_bottom(parsed_args):
+    root_names = set()
+    leaf_names = set()
+    for arg_set in parsed_args:
+        root_names.add(arg_set[0])
+        for leaf_name in arg_set[2]:
+            leaf_names.add(leaf_name)
+    return (root_names - leaf_names).pop()
 
 
 def parse_disctree_row(line):
     try:
         name = line.split(' ')[0]
-        weight = line.split('(')[1].split(')')[0]
+        weight = int(line.split('(')[1].split(')')[0])
         children_names = line.split('->')[1].strip().split(', ') if '->' in line else []
     except:
         raise
