@@ -263,6 +263,34 @@ def count_depth_score(input_string):
     return sum_depth
 
 
+# 10
+
+class KnotTwine:
+
+    def __init__(self, size):
+        self.twine = list(range(size))
+        self.size = size
+        self.position = 0
+        self.skip_size = 0
+
+    def transform(self, transformation_length):
+        left = self.position
+        right = self.position + transformation_length
+        if right >= self.size:
+            modified_section = self.twine[left:self.size + 1] + self.twine[0:right % self.size]
+            reversed_modified_section = modified_section[::-1]
+            reversed_modified_left = reversed_modified_section[0:self.size - left]
+            reversed_modified_right = reversed_modified_section[self.size - left:]
+            self.twine[left:self.size] = reversed_modified_left
+            self.twine[0:right % self.size] = reversed_modified_right
+        else:
+            if self.position == 0:
+                self.twine[left:right] = self.twine[right - 1::-1]
+            else:
+                self.twine[left:right] = self.twine[right - 1:left - 1:-1]
+        self.position = (self.position + transformation_length + self.skip_size) % self.size
+        self.skip_size += 1
+
 # 16
 
 
