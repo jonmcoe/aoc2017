@@ -291,6 +291,21 @@ class KnotTwine:
         self.position = (self.position + transformation_length + self.skip_size) % self.size
         self.skip_size += 1
 
+
+from functools import reduce
+from operator import add, xor
+
+
+def knot_hash(bytesin):
+    EXTRA_BYTES = [17, 31, 73, 47, 23]
+    lengths = [ord(b) for b in bytesin] + EXTRA_BYTES
+    kt = KnotTwine(256)
+    for length in lengths * 64:
+        kt.transform(length)
+    blocks_of_sixteen = (kt.twine[block_num * 16:block_num * 16 + 16] for block_num in range(16))
+    xor_results_hex_pairs = ('%02x' % reduce(xor, l) for l in blocks_of_sixteen)
+    return reduce(add, xor_results_hex_pairs)
+
 # 12
 
 
