@@ -3,6 +3,7 @@ import sys
 import shared
 
 
+# https://www.redblobgames.com/grids/hexagons/
 TURN_TO_DIRECTION = {
     'n': (0, 1, -1),
     's': (0, -1, 1),
