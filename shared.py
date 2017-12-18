@@ -291,6 +291,23 @@ class KnotTwine:
         self.position = (self.position + transformation_length + self.skip_size) % self.size
         self.skip_size += 1
 
+# 12
+
+
+def p12_parse_line(line):
+    left, right = line.split('<->')
+    return int(left.strip()), [int(x.strip()) for x in right.split(', ')]
+
+
+def get_set_of_connecteds(adjacency_dict, subject, seen=set()):
+    if (subject not in adjacency_dict) or (subject in seen):
+        return set()
+    else:
+        neighbors = adjacency_dict[subject]
+        sets_to_union = (get_set_of_connecteds(adjacency_dict, s, seen.union([subject])) for s in neighbors)
+        return {subject}.union(*sets_to_union)
+
+
 # 16
 
 
