@@ -21,7 +21,7 @@ if __name__ == '__main__':
         for i, val in block:
             current_block_xor ^= val
         # print(current_block_xor)
-        sum_answer += hex(current_block_xor)[2:]
+        sum_answer += '%02x' % current_block_xor
     print(sum_answer)
     # sum(reduce(lambda a, b: a, b[0]), t) for _, t in sixteen_blocks)
 
@@ -29,4 +29,4 @@ if __name__ == '__main__':
 # submitted
 
 # e1edc524b973d8ce80dad9251a2cb918
-# 2f8c3d210fdd57cec13d928bfd2dd
+# 2f8c3d2100fdd57cec130d928b0fd2dd
