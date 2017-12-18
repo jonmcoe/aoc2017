@@ -307,6 +307,38 @@ def get_set_of_connecteds(adjacency_dict, subject, seen=set()):
         sets_to_union = (get_set_of_connecteds(adjacency_dict, s, seen.union([subject])) for s in neighbors)
         return {subject}.union(*sets_to_union)
 
+# 14
+
+
+def build_range_dict(filename):
+    with open(filename, 'r') as f:
+        return {
+            int(t[0]): int(t[1]) for t in [l.split(':') for l in f.readlines() if l.strip()]
+        }
+
+
+def position_at_time(r, t):
+    states = list(range(r)) + list(range(r - 2, 0, -1))
+    print (states)
+    return states[t % len(states)]
+
+
+def penalty_when_starting_at(starting_time, range_dict):
+    penalty = 0
+    for d in range(max(range_dict.keys())):
+        if d in range_dict and position_at_time(range_dict[d], d + starting_time) == 0:
+            penalty += d * range_dict[d]
+    return penalty
+
+
+def gets_caught(starting_time, range_dict):
+    for d in range(max(range_dict.keys())):
+        if d in range_dict and position_at_time(range_dict[d], d + starting_time) == 0:
+            print(starting_time, d)
+            return True
+    return False
+
+
 
 # 16
 
