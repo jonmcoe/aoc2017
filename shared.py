@@ -1,5 +1,9 @@
 import string
+from collections import defaultdict, namedtuple
+from functools import reduce
+from operator import add, mod, mul, xor
 
+from typing import List
 
 # 1
 
@@ -182,8 +186,6 @@ def parse_disctree_row(line):
 
 # 8
 
-from collections import defaultdict, namedtuple
-
 Instruction = namedtuple('instruction', ['register', 'op', 'amount', 'condition_reg', 'condition_op', 'condition_val'])
 
 
@@ -292,8 +294,6 @@ class KnotTwine:
         self.skip_size += 1
 
 
-from functools import reduce
-from operator import add, xor
 
 
 def knot_hash(bytesin):
@@ -429,3 +429,64 @@ def get_moves(filename):
     return raw_contents.split(',')
 
 
+# 18
+
+DuetInstruction = namedtuple('duetinstruction', ['op', 'reg', 'y'])
+
+
+def parse_duet_instruction(raw_message):
+    tokens = raw_message.split()
+    print(tokens)
+    if len(tokens) == 3:
+        return DuetInstruction(*tokens)
+    else:
+        return DuetInstruction(*(tokens + [None]))
+
+
+class DuetMachine:
+
+    def __init__(self, instructions: List[DuetInstruction]):
+        self.registers = defaultdict(int)
+        self.last_sound_played = None
+        self.recovered_sounds = []
+        self.position = 0
+        self.instructions = instructions
+
+    def run_instructions(self, break_function=None):
+        break_function_triggered = break_function(self)
+        while self.position < len(self.instructions) + 1 and not break_function_triggered:
+            self._process_instruction()
+            break_function_triggered = break_function(self)
+
+    def _process_instruction(self):
+        register_modifying_operations = {
+            'set': lambda x, y: y,
+            'add': add,
+            'mul': mul,
+            'mod': mod
+        }
+        instruction = self.instructions[self.position]
+        print(instruction)
+        # print(self.registers)
+        # print(self.last_sound_played)
+        value_of_register = self.registers[instruction.reg]
+        if instruction.op in register_modifying_operations:
+            f = register_modifying_operations[instruction.op]
+            y = self.registers[instruction.y] if instruction.y.isalpha() else int(instruction.y)
+            self.registers[instruction.reg] = f(value_of_register, y)
+            self.position += 1
+        elif instruction.op == 'snd':
+            self.last_sound_played = value_of_register
+            self.position += 1
+        elif instruction.op == 'rcv':
+            if value_of_register > 0:
+                self.recovered_sounds.append(self.last_sound_played)
+            self.position += 1
+        elif instruction.op == 'jgz':
+            if value_of_register > 0:
+                y = self.registers[instruction.y] if instruction.y.isalpha() else int(instruction.y)
+                self.position += y
+            else:
+                self.position += 1
+        else:
+            raise NotImplementedError(instruction.op)
