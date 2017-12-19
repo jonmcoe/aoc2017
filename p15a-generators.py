@@ -11,6 +11,7 @@ from shared import (
 BOUND = 40 * 10 ** 6
 
 
+# TODO: this could be fun to math instead of brute force
 if __name__ == '__main__':
     values = get_generator_seeds(sys.argv[1])
     matches = 0
