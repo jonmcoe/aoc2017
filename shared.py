@@ -372,6 +372,13 @@ def get_generator_seeds(filename):
     return [int(r[-1]) for r in rows]
 
 
+GENERATOR_COMPARISON_BOUNDARY = 2 ** 16
+
+GENERATOR_MULTIPLICANDS = [16807, 48271]  # 7 ** 5 and a prime. so certainly relatively prime
+
+GENERATOR_DIVISOR = 2147483647
+
+
 # 16
 
 

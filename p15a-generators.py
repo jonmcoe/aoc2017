@@ -1,16 +1,14 @@
 import sys
 
-from shared import get_generator_seeds
+from shared import (
+    GENERATOR_COMPARISON_BOUNDARY,
+    GENERATOR_DIVISOR,
+    GENERATOR_MULTIPLICANDS,
+    get_generator_seeds
+)
 
 
 BOUND = 40 * 10 ** 6
-COMPARISON_BOUNDARY = 2 ** 16
-
-
-# 7 ** 5 and a prime. so certainly relatively prime
-MULTIPLICANDS = [16807, 48271]
-
-DIVISOR = 2147483647
 
 
 if __name__ == '__main__':
@@ -19,8 +17,8 @@ if __name__ == '__main__':
     for _ in range(BOUND):
         # if _ % 10 ** 6 == 0:
         #     print("{}: {}".format(_, matches))
-        values[0] = (values[0] * MULTIPLICANDS[0]) % DIVISOR
-        values[1] = (values[1] * MULTIPLICANDS[1]) % DIVISOR
-        if (values[0] % COMPARISON_BOUNDARY == values[1] % COMPARISON_BOUNDARY):
+        values[0] = (values[0] * GENERATOR_MULTIPLICANDS[0]) % GENERATOR_DIVISOR
+        values[1] = (values[1] * GENERATOR_MULTIPLICANDS[1]) % GENERATOR_DIVISOR
+        if values[0] % GENERATOR_COMPARISON_BOUNDARY == values[1] % GENERATOR_COMPARISON_BOUNDARY:
             matches += 1
     print(matches)
