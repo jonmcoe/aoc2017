@@ -363,6 +363,15 @@ def sum_individual_characters(int_string):
 def convert_hex_to_bytes(h):
     return "{:0128b}".format(int(h, 16))
 
+
+#15
+
+
+def get_generator_seeds(filename):
+    rows = get_separated_rows(filename, sep=' ')
+    return [int(r[-1]) for r in rows]
+
+
 # 16
 
 
