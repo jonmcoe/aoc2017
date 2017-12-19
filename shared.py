@@ -322,7 +322,7 @@ def get_set_of_connecteds(adjacency_dict, subject, seen=set()):
         sets_to_union = (get_set_of_connecteds(adjacency_dict, s, seen.union([subject])) for s in neighbors)
         return {subject}.union(*sets_to_union)
 
-# 14
+# 13
 
 
 def build_range_dict(filename):
@@ -354,6 +354,14 @@ def gets_caught(starting_time, range_dict):
     return False
 
 
+# 14
+
+def sum_individual_characters(int_string):
+    return sum(int(c) for c in int_string)
+
+
+def convert_hex_to_bytes(h):
+    return "{:0128b}".format(int(h, 16))
 
 # 16
 
