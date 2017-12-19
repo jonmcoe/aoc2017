@@ -3,7 +3,7 @@ from collections import defaultdict, namedtuple
 from functools import reduce
 from operator import add, mod, mul, xor
 
-from typing import List
+from typing import List, Optional
 
 # 1
 
@@ -334,7 +334,6 @@ def build_range_dict(filename):
 
 def position_at_time(r, t):
     states = list(range(r)) + list(range(r - 2, 0, -1))
-    print (states)
     return states[t % len(states)]
 
 
@@ -349,7 +348,6 @@ def penalty_when_starting_at(starting_time, range_dict):
 def gets_caught(starting_time, range_dict):
     for d in range(max(range_dict.keys())):
         if d in range_dict and position_at_time(range_dict[d], d + starting_time) == 0:
-            print(starting_time, d)
             return True
     return False
 
@@ -431,12 +429,11 @@ def get_moves(filename):
 
 # 18
 
-DuetInstruction = namedtuple('duetinstruction', ['op', 'reg', 'y'])
+DuetInstruction = namedtuple('duetinstruction', ['op', 'x', 'y'])
 
 
 def parse_duet_instruction(raw_message):
     tokens = raw_message.split()
-    print(tokens)
     if len(tokens) == 3:
         return DuetInstruction(*tokens)
     else:
@@ -445,12 +442,14 @@ def parse_duet_instruction(raw_message):
 
 class DuetMachine:
 
-    def __init__(self, instructions: List[DuetInstruction]):
+    def __init__(self, program_id, instructions: List[DuetInstruction]):
         self.registers = defaultdict(int)
-        self.last_sound_played = None
-        self.recovered_sounds = []
+        self.registers['p'] = program_id
+        self.message_queue = []
+        self.last_message_popped = None  # basically a hack to maintain a solution for p18a
         self.position = 0
         self.instructions = instructions
+        self.recipient = self
 
     def run_instructions(self, break_function=None):
         break_function_triggered = break_function(self)
@@ -466,26 +465,22 @@ class DuetMachine:
             'mod': mod
         }
         instruction = self.instructions[self.position]
-        print(instruction)
-        # print(self.registers)
-        # print(self.last_sound_played)
-        value_of_register = self.registers[instruction.reg]
+        x_val = self.registers[instruction.x] if instruction.x.isalpha() else int(instruction.x)
+        y_val = instruction.y and (self.registers[instruction.y] if instruction.y.isalpha() else int(instruction.y))
         if instruction.op in register_modifying_operations:
             f = register_modifying_operations[instruction.op]
-            y = self.registers[instruction.y] if instruction.y.isalpha() else int(instruction.y)
-            self.registers[instruction.reg] = f(value_of_register, y)
+            self.registers[instruction.x] = f(x_val, y_val)
             self.position += 1
         elif instruction.op == 'snd':
-            self.last_sound_played = value_of_register
+            self.recipient.message_queue.append(x_val)
             self.position += 1
         elif instruction.op == 'rcv':
-            if value_of_register > 0:
-                self.recovered_sounds.append(self.last_sound_played)
+            self.registers[instruction.x] = (self.message_queue and self.message_queue.pop()) or 0
+            self.last_message_popped = self.registers[instruction.x]
             self.position += 1
         elif instruction.op == 'jgz':
-            if value_of_register > 0:
-                y = self.registers[instruction.y] if instruction.y.isalpha() else int(instruction.y)
-                self.position += y
+            if x_val > 0:
+                self.position += y_val
             else:
                 self.position += 1
         else:
