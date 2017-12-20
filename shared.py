@@ -117,9 +117,9 @@ def reallocate_banks(banks):
 # 7
 
 
-def get_exact_rows(filename):
+def get_exact_rows(filename, strip=True):
     with open(filename, 'r') as f:
-        return (l.strip() for l in f.readlines())
+        return (l.strip() if strip else l for l in f.readlines())
 
 
 class DiscNode(object):
