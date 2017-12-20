@@ -346,7 +346,7 @@ def penalty_when_starting_at(starting_time, range_dict):
 
 
 def gets_caught(starting_time, range_dict):
-    for d in range(max(range_dict.keys())):
+    for d in range(max(range_dict.keys()) + 1):
         if d in range_dict and position_at_time(range_dict[d], d + starting_time) == 0:
             return True
     return False
