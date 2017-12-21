@@ -1,3 +1,4 @@
+import re
 import string
 from collections import defaultdict, namedtuple
 from functools import reduce
@@ -485,3 +486,36 @@ class DuetMachine:
                 self.position += 1
         else:
             raise NotImplementedError(instruction.op)
+
+
+# 20
+
+
+class Particle:
+
+    def __init__(self, position, velocity, acceleration):
+        self.position = position
+        self.velocity = velocity
+        self.acceleration = acceleration
+        self.clock = 0
+
+    def __str__(self):
+        return "p={0}, v={1}, a={2}".format(self.position, self.velocity, self.acceleration)
+
+    def __repr__(self):
+        return str(self)
+
+    def step(self):
+        self.clock += 1
+        self.velocity = self.velocity[0] + self.acceleration[0], self.velocity[1] + self.acceleration[1], self.velocity[2] + self.acceleration[2]
+        self.position = self.position[0] + self.velocity[0], self.position[1] + self.velocity[1], self.position[2] + self.velocity[2]
+
+
+def magnitude_manhattan(v):
+    return sum(abs(x) for x in v)
+
+
+def parse_particle(l):
+    all_parts = re.split('[<>,]', l)
+    relevant_parts = [int(p) for p in all_parts if p and '=' not in p]  # janky!
+    return Particle(tuple(relevant_parts[:3]), tuple(relevant_parts[3:6]), tuple(relevant_parts[6:9]))
