@@ -18,7 +18,7 @@ if __name__ == '__main__':
         if current_character.isalpha():
             letters_encountered += current_character
         elif current_character == '+':
-            left_turn = direction[1], direction[0]
+            left_turn = direction[1], direction[0]  # this is not correct how did this work
             right_turn = direction[1] * -1, direction[0] * -1
             peek_left_character = None
             peek_right_character = None

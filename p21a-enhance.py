@@ -53,10 +53,7 @@ def perform_iteration(p):
 
     chop_by = next(i for i in (2, 3) if len(p) % i == 0)
     num_blocks = len(p) // chop_by
-    blocks_grid = []
-    for _ in range(num_blocks):
-        this_row = [None] * num_blocks
-        blocks_grid.append(this_row)
+    blocks_grid = shared.initialize_2d_array(num_blocks, num_blocks, '.')
 
     for i in range(num_blocks):
         for j in range(num_blocks):
@@ -73,7 +70,7 @@ if __name__ == '__main__':
     ruleset = parse_rules(lines_in)
     picture = ('.#.', '..#', '###')
 
-    cap = 19
+    cap = 6
     for iteration in range(cap):
         print("{0}: {1}".format(iteration, len([c for c in str(picture) if c == '#'])))
         picture = perform_iteration(picture)

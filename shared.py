@@ -519,3 +519,20 @@ def parse_particle(l):
     all_parts = re.split('[<>,]', l)
     relevant_parts = [int(p) for p in all_parts if p and '=' not in p]  # janky!
     return Particle(tuple(relevant_parts[:3]), tuple(relevant_parts[3:6]), tuple(relevant_parts[6:9]))
+
+
+# 21
+
+def initialize_2d_array(x_size, y_size, initial_val=None):
+    matrix = []
+    for _ in range(y_size):
+        this_row = [initial_val] * x_size
+        matrix.append(this_row)
+    return matrix
+
+
+def get_value_at_tuple(grid, t):
+    return grid[t[0]][t[1]]
+
+def set_value_at_tuple(grid, t, val):
+    grid[t[0]][t[1]] = val
