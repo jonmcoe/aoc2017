@@ -2,7 +2,7 @@ import re
 import string
 from collections import defaultdict, namedtuple
 from functools import reduce
-from operator import add, mod, mul, xor
+from operator import add, mod, mul, sub, xor
 
 from typing import List, Optional
 
@@ -451,23 +451,26 @@ class DuetMachine:
         self.position = 0
         self.instructions = instructions
         self.recipient = self
+        self.instructions_count = defaultdict(int)
 
     def run_instructions(self, break_function=None):
-        break_function_triggered = break_function(self)
-        while self.position < len(self.instructions) + 1 and not break_function_triggered:
+        break_function_triggered = break_function and break_function(self)
+        while self.position < len(self.instructions) and not break_function_triggered:
             self._process_instruction()
-            break_function_triggered = break_function(self)
+            break_function_triggered = break_function and break_function(self)
 
     def _process_instruction(self):
         register_modifying_operations = {
             'set': lambda x, y: y,
             'add': add,
             'mul': mul,
-            'mod': mod
+            'mod': mod,
+            'sub': sub
         }
         instruction = self.instructions[self.position]
         x_val = self.registers[instruction.x] if instruction.x.isalpha() else int(instruction.x)
         y_val = instruction.y and (self.registers[instruction.y] if instruction.y.isalpha() else int(instruction.y))
+        self.instructions_count[instruction.op] += 1
         if instruction.op in register_modifying_operations:
             f = register_modifying_operations[instruction.op]
             self.registers[instruction.x] = f(x_val, y_val)
@@ -481,6 +484,11 @@ class DuetMachine:
             self.position += 1
         elif instruction.op == 'jgz':
             if x_val > 0:
+                self.position += y_val
+            else:
+                self.position += 1
+        elif instruction.op == 'jnz':
+            if x_val != 0:
                 self.position += y_val
             else:
                 self.position += 1
