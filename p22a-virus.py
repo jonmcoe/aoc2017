@@ -18,10 +18,6 @@ if __name__ == '__main__':
     position = grid_size // 2, grid_size // 2
     direction = (-1, 0)
     infection_events = 0
-    # confirm centering
-    # notreallyinfinite_grid[center[0]][center[1]] = 'X'
-    # for r in notreallyinfinite_grid[center[0]-15:center[0]+15]:
-    #     print(r[center[0]-15:center[0]+15])
     for _ in range(ITERATIONS):
         if shared.get_value_at_tuple(notreallyinfinite_grid, position) == INFECTED:
             direction = direction[1], -1 * direction[0]  # right turn
@@ -32,6 +28,3 @@ if __name__ == '__main__':
             infection_events += 1
         position = position[0] + direction[0], position[1] + direction[1]
     print(infection_events)
-    # notreallyinfinite_grid[position[0]][position[1]] = 'X'
-    # for r in notreallyinfinite_grid[position[0] - 15:position[0] + 15]:
-    #     print(r[position[0] - 15:position[0] + 15])
