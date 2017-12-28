@@ -1,11 +1,13 @@
 import sys
 
+from typing import Set, Tuple
+
 import shared
 
 
 if __name__ == '__main__':
     banks = tuple(list(shared.get_separated_rows(sys.argv[1], sep='\t', func=lambda x: int(x)))[0])
-    banks_seen = set()
+    banks_seen = set()  # type: Set[Tuple[int, ...]]
     steps = 0
     while banks not in banks_seen:
         banks_seen.add(banks)

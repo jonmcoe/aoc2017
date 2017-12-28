@@ -1,5 +1,7 @@
 import sys
 
+from typing import List
+
 from shared import get_exact_rows
 
 
@@ -7,7 +9,7 @@ if __name__ == '__main__':
     grid = list(get_exact_rows(sys.argv[1], strip=False))
     current_position = [0, grid[0].index('|')]
     direction = 1, 0
-    letters_encountered = []
+    letters_encountered = []  # type: List[str]
     current_character = None
     steps = 0
     while current_character != ' ':

@@ -4,7 +4,7 @@ from collections import defaultdict, namedtuple
 from functools import reduce
 from operator import add, mod, mul, sub, xor
 
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 # 1
 
@@ -443,15 +443,15 @@ def parse_duet_instruction(raw_message):
 
 class DuetMachine:
 
-    def __init__(self, program_id, instructions: List[DuetInstruction]):
-        self.registers = defaultdict(int)
+    def __init__(self, program_id: int, instructions: List[DuetInstruction]) -> None:
+        self.registers = defaultdict(int)  # type: Dict[str, int]
         self.registers['p'] = program_id
-        self.message_queue = []
+        self.message_queue = []  # type: List[int]
         self.last_message_popped = None  # basically a hack to maintain a solution for p18a
         self.position = 0
         self.instructions = instructions
         self.recipient = self
-        self.instructions_count = defaultdict(int)
+        self.instructions_count = defaultdict(int)  # type: Dict[str, int]
 
     def run_instructions(self, break_function=None):
         break_function_triggered = break_function and break_function(self)

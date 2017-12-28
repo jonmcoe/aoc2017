@@ -1,5 +1,7 @@
 import sys
 
+from typing import Dict, Tuple
+
 from shared import get_exact_rows, parse_particle
 
 
@@ -8,7 +10,7 @@ if __name__ == '__main__':
     particles_dict = dict((i, parse_particle(l)) for i, l in enumerate(lines))
 
     for _ in range(10000):
-        position_to_particle_id = {}
+        position_to_particle_id = {}  # type: Dict[Tuple[int, int, int], int]
         deletion_set = set()
         # if _ % 1000 == 0:
         #     print(_)
