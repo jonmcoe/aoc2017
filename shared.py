@@ -542,5 +542,6 @@ def initialize_2d_array(x_size, y_size, initial_val=None):
 def get_value_at_tuple(grid, t):
     return grid[t[0]][t[1]]
 
+
 def set_value_at_tuple(grid, t, val):
     grid[t[0]][t[1]] = val
