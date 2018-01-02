@@ -1,10 +1,10 @@
 import re
 import string
-from collections import defaultdict, namedtuple
+from collections import defaultdict, deque, namedtuple
 from functools import reduce
 from operator import add, mod, mul, sub, xor
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Sequence
 
 # 1
 
@@ -446,18 +446,24 @@ class DuetMachine:
     def __init__(self, program_id: int, instructions: List[DuetInstruction]) -> None:
         self.registers = defaultdict(int)  # type: Dict[str, int]
         self.registers['p'] = program_id
-        self.message_queue = []  # type: List[int]
+        self.message_queue = deque()  # type: Sequence[int]
         self.last_message_popped = None  # basically a hack to maintain a solution for p18a
         self.position = 0
         self.instructions = instructions
         self.recipient = self
         self.instructions_count = defaultdict(int)  # type: Dict[str, int]
+        self.messages_sent = 0
+        self.terminated = False
 
     def run_instructions(self, break_function=None):
         break_function_triggered = break_function and break_function(self)
-        while self.position < len(self.instructions) and not break_function_triggered:
-            self._process_instruction()
-            break_function_triggered = break_function and break_function(self)
+        try:
+            while self.position < len(self.instructions) + 1 and not break_function_triggered:
+                self._process_instruction()
+                break_function_triggered = break_function and break_function(self)
+        except IndexError:
+            return
+        self.terminated = True
 
     def _process_instruction(self):
         register_modifying_operations = {
@@ -467,31 +473,31 @@ class DuetMachine:
             'mod': mod,
             'sub': sub
         }
+
         instruction = self.instructions[self.position]
         x_val = self.registers[instruction.x] if instruction.x.isalpha() else int(instruction.x)
         y_val = instruction.y and (self.registers[instruction.y] if instruction.y.isalpha() else int(instruction.y))
         self.instructions_count[instruction.op] += 1
+
         if instruction.op in register_modifying_operations:
             f = register_modifying_operations[instruction.op]
             self.registers[instruction.x] = f(x_val, y_val)
             self.position += 1
         elif instruction.op == 'snd':
-            self.recipient.message_queue.append(x_val)
+            self.recipient.message_queue.appendleft(x_val)
             self.position += 1
+            self.messages_sent += 1
         elif instruction.op == 'rcv':
-            self.registers[instruction.x] = (self.message_queue and self.message_queue.pop()) or 0
-            self.last_message_popped = self.registers[instruction.x]
+            message_in = self.message_queue.pop()
+            self.registers[instruction.x] = message_in
+            self.last_message_popped = message_in
             self.position += 1
         elif instruction.op == 'jgz':
-            if x_val > 0:
-                self.position += y_val
-            else:
-                self.position += 1
+            step = y_val if x_val > 0 else 1
+            self.position += step
         elif instruction.op == 'jnz':
-            if x_val != 0:
-                self.position += y_val
-            else:
-                self.position += 1
+            step = y_val if x_val != 0 else 1
+            self.position += step
         else:
             raise NotImplementedError(instruction.op)
 
